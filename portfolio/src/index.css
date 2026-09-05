@@ -1,0 +1,268 @@
+/* ==========================================================================
+   SHREYA GUPTA PORTFOLIO - MODERN 3D INTERACTIVE WHITE & BLUE THEME (REACT)
+   ========================================================================== */
+
+:root {
+  /* Clean White & Royal/Sky Blue Color Palette */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-card-hover: #f0f9ff;
+  --bg-dark-accent: #0f172a;
+
+  --border-subtle: #e2e8f0;
+  --border-active: #38bdf8;
+  --border-hover: #0284c7;
+
+  /* Blue Accents */
+  --accent-primary: #0284c7;    /* Deep Royal Blue */
+  --accent-secondary: #0ea5e9;  /* Vibrant Sky Blue */
+  --accent-dark: #0369a1;       /* Dark Blue Text */
+  --accent-light: #e0f2fe;      /* Soft Light Blue Pill */
+  --accent-emerald: #10b981;    /* Emerald Green Badge */
+  --accent-amber: #f59e0b;      /* Amber Badge */
+  --accent-purple: #8b5cf6;     /* Purple Badge */
+
+  /* Text Colors */
+  --text-primary: #0f172a;     /* Slate 900 */
+  --text-secondary: #475569;   /* Slate 600 */
+  --text-muted: #64748b;       /* Slate 500 */
+  --text-inverse: #ffffff;
+
+  /* Gradients */
+  --gradient-blue: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+  --gradient-text: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  --gradient-avatar: linear-gradient(135deg, #0284c7, #0ea5e9, #38bdf8);
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 10px 25px -5px rgba(2, 132, 199, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 20px 35px -10px rgba(2, 132, 199, 0.16);
+  --shadow-glow: 0 0 20px rgba(14, 165, 233, 0.25);
+
+  /* Fonts */
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Fira Code', monospace;
+
+  /* Layout Constants */
+  --nav-height: 76px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Global Resets */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-family: var(--font-sans);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  overflow-x: hidden;
+}
+
+body {
+  min-height: 100vh;
+  line-height: 1.6;
+  background-color: var(--bg-primary);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 9px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-primary);
+}
+
+/* Glass Panels & 3D Cards */
+.glass-panel {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: var(--transition-smooth);
+}
+
+.glass-panel:hover {
+  border-color: var(--border-active);
+  box-shadow: var(--shadow-lg);
+}
+
+.glass-card-3d {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-card-3d:hover {
+  transform: translateY(-6px);
+  border-color: var(--accent-secondary);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Text Gradient */
+.gradient-text {
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: var(--accent-light);
+  color: var(--accent-dark);
+  border: 1px solid rgba(2, 132, 199, 0.2);
+}
+
+.badge-emerald {
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #a7f3d0;
+}
+
+.badge-purple {
+  background: #f5f3ff;
+  color: #6d28d9;
+  border-color: #ddd6fe;
+}
+
+.badge-amber {
+  background: #fffbeb;
+  color: #b45309;
+  border-color: #fde68a;
+}
+
+.badge-blue {
+  background: #f0f9ff;
+  color: #0369a1;
+  border-color: #bae6fd;
+}
+
+/* Buttons */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 26px;
+  background: var(--gradient-blue);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+  transition: var(--transition-bounce);
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 22px rgba(2, 132, 199, 0.45);
+  color: #ffffff;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 26px;
+  background: #ffffff;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-smooth);
+  text-decoration: none;
+}
+
+.btn-secondary:hover {
+  background: var(--accent-light);
+  border-color: var(--accent-primary);
+  color: var(--accent-dark);
+  transform: translateY(-2px);
+}
+
+/* Section Containers */
+.section-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 80px 24px;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.section-subtitle {
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--accent-primary);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.section-title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+
+/* Animations */
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-float {
+  animation: floatSlow 5s ease-in-out infinite;
+}
+
+/* Responsive Rules */
+@media (max-width: 768px) {
+  .section-container {
+    padding: 50px 16px;
+  }
+  .section-title {
+    font-size: 1.75rem;
+  }
+  .btn-primary, .btn-secondary {
+    width: 100%;
+    padding: 12px 20px;
+  }
+}
