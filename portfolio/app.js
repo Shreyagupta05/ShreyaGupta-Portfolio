@@ -140,32 +140,84 @@ function initTilt() {
   });
 }
 
-// ─── 3D MODEL TURNTABLE STAGE (continuous auto 360° spin) ────
+// ─── 3D MODEL TURNTABLE STAGE (360° rotation with front-view snapping) ──
 function initCube() {
   const container = document.getElementById('turntable-container');
   const stage = document.getElementById('stage-rotator');
+  const hint = document.getElementById('stage-hint');
   if (!container || !stage) return;
 
-  // Clear CSS animation to drive continuously via JS loop
   stage.style.animation = 'none';
 
   let currentAngleY = 0;
   let currentAngleX = 0;
+  let targetSnapY = 0;
+  let isRotating = true;
+  let isSnapping = false;
   let isDragging = false;
   let startX = 0, startY = 0;
   let dragVelocityY = 0;
+  let clickTimer = null;
+  let lastTouchTime = 0;
 
-  // Continuous loop that runs forever by itself
+  const ROTATION_SPEED = 0.55; // Consistent, smooth 360° rotation speed
+
+  // Smooth requestAnimationFrame 60FPS loop with front view snap easing
   function spinLoop() {
-    if (!isDragging) {
-      currentAngleY += 0.4 + dragVelocityY;
-      dragVelocityY *= 0.95; // Smooth inertia decay
+    if (isRotating && !isDragging) {
+      currentAngleY += ROTATION_SPEED + dragVelocityY;
+      dragVelocityY *= 0.95;
+    } else if (!isRotating && !isDragging && isSnapping) {
+      // Smoothly snap to front view angle (nearest 180° / 360° alignment)
+      const diffY = targetSnapY - currentAngleY;
+      const diffX = 0 - currentAngleX;
+
+      currentAngleY += diffY * 0.12;
+      currentAngleX += diffX * 0.12;
+
+      if (Math.abs(diffY) < 0.05 && Math.abs(diffX) < 0.05) {
+        currentAngleY = targetSnapY;
+        currentAngleX = 0;
+        isSnapping = false;
+      }
     }
+
     stage.style.transform = `rotateX(${currentAngleX}deg) rotateY(${currentAngleY}deg)`;
     requestAnimationFrame(spinLoop);
   }
   requestAnimationFrame(spinLoop);
 
+  // Toggle Rotation Helper (Single Tap / Click)
+  function toggleRotation() {
+    if (isRotating) {
+      isRotating = false;
+      dragVelocityY = 0;
+      targetSnapY = Math.round(currentAngleY / 180) * 180;
+      isSnapping = true;
+      if (hint) hint.innerHTML = '<i data-lucide="check-circle"></i> 🎯 Stopped & Snapped to Front (Tap to Start)';
+    } else {
+      isRotating = true;
+      isSnapping = false;
+      if (hint) hint.innerHTML = '<i data-lucide="rotate-3d"></i> 🟢 360° Rotation Active (Tap to Stop & Snap)';
+    }
+    if (window.lucide) lucide.createIcons();
+  }
+
+  // Single Tap / Click toggles Rotation (Start / Stop & Snap)
+  container.addEventListener('click', e => {
+    if (!isDragging) {
+      toggleRotation();
+    }
+  });
+
+  // Mobile Touch Gestures (Single Tap to Start/Stop)
+  container.addEventListener('touchend', e => {
+    if (!isDragging) {
+      toggleRotation();
+    }
+  });
+
+  // Drag / Touch-Move 3D stage interaction
   container.addEventListener('mousedown', e => {
     isDragging = true;
     startX = e.clientX;
@@ -305,42 +357,88 @@ function initBTT() {
   btn.addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth' }));
 }
 
-// ─── CONTACT FORM ───────────────────────────────────────────
+// ─── CONTACT FORM (Automatic Email API submit - No mail client option) ──
 function initForm() {
   const form = document.getElementById('contact-form');
   const status = document.getElementById('form-status');
   const btn = document.getElementById('send-btn');
   if (!form) return;
 
+  const targetEmail = 'email-nobitashizuka543543@gmail.com';
+
   form.addEventListener('submit', async e => {
     e.preventDefault();
     const name = document.getElementById('c-name')?.value.trim();
     const email = document.getElementById('c-email')?.value.trim();
     const message = document.getElementById('c-message')?.value.trim();
-    const subject = document.getElementById('c-subject')?.value.trim();
+    const subject = document.getElementById('c-subject')?.value.trim() || 'Portfolio Message from ' + name;
 
-    if (!name || !email || !message) return showStatus('err', '⚠ Fill all required fields.');
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showStatus('err', '⚠ Invalid email.');
+    // Strict Field Validation (All fields required)
+    if (!name) {
+      return showStatus('err', '⚠ Name field is required.');
+    }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return showStatus('err', '⚠ A valid Email address is required.');
+    }
+    if (!message) {
+      return showStatus('err', '⚠ Message field is required.');
+    }
 
-    btn.innerHTML = '<i data-lucide="loader-2"></i> <span>Sending…</span>';
+    btn.innerHTML = '<i data-lucide="loader-2" class="spin-icon"></i> <span>Sending Message…</span>';
     if (window.lucide) lucide.createIcons();
     btn.disabled = true;
 
-    await new Promise(r => setTimeout(r, 700));
-    const ml = `mailto:guptashreya2305@gmail.com?subject=${encodeURIComponent(subject || 'Portfolio Contact from ' + name)}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`)}`;
-    window.open(ml, '_blank');
+    try {
+      // Background Email Service Dispatch via FormSubmit API (Sends directly to email without opening any mail client)
+      const res = await fetch(`https://formsubmit.co/ajax/${targetEmail}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          name: name,
+          email: email,
+          _subject: subject,
+          message: message,
+          _captcha: 'false'
+        })
+      });
 
-    form.reset();
-    showStatus('ok', '✓ Email client opened! Message ready to send.');
-    btn.innerHTML = '<i data-lucide="send"></i> <span>Send Message</span>';
-    btn.disabled = false;
-    if (window.lucide) lucide.createIcons();
+      if (res.ok) {
+        form.reset();
+        showStatus('ok', '🎉 Thank you for contacting me!');
+      } else {
+        // Fallback Web3Forms background API
+        const fallbackRes = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            access_key: '564a5c54-469b-4395-926e-4c57c2c8f85f',
+            name: name,
+            email: email,
+            subject: subject,
+            message: message
+          })
+        });
+
+        if (fallbackRes.ok) {
+          form.reset();
+          showStatus('ok', '🎉 Thank you for contacting me!');
+        } else {
+          showStatus('err', '❌ Failed to send message. Please try again.');
+        }
+      }
+    } catch (err) {
+      showStatus('err', '❌ Failed to send message. Please try again.');
+    } finally {
+      btn.innerHTML = '<i data-lucide="send"></i> <span>Send Message</span>';
+      btn.disabled = false;
+      if (window.lucide) lucide.createIcons();
+    }
   });
 
   function showStatus(type, msg) {
     status.textContent = msg;
     status.className = 'form-status ' + type;
-    setTimeout(() => { status.className = 'form-status'; }, 5000);
+    setTimeout(() => { status.className = 'form-status'; }, 6000);
   }
 }
 
